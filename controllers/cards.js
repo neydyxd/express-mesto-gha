@@ -25,7 +25,19 @@ const createCard = (req, res) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then(() => res.status(201).send({ message: 'Карточка успешно создана' }))
+    .then(({
+      _id,
+      name,
+      link,
+      owner,
+      likes,
+    }) => res.status(201).send({
+      _id,
+      name,
+      link,
+      owner,
+      likes,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
@@ -70,7 +82,7 @@ const addCardLike = (req, res) => {
       if (!card) {
         return res.status(404).send({ message: 'Карточка не найдена' });
       }
-      res.send(card.likes);
+      res.status(201).send(card.likes);
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
@@ -90,7 +102,7 @@ const removeCardLike = (req, res) => {
       if (!card) {
         return res.status(404).send({ message: 'Карточка не найдена' });
       }
-      res.send(card.likes);
+      res.status(200).send(card.likes);
     })
     .catch((err) => {
       res.status(500).send({ message: err.message });
