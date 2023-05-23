@@ -34,7 +34,7 @@ const createUser = (req, res) => {
   User.create(req.body)
     .then((data) => res.status(201).send({ data }))
     .catch((err) => {
-      res.status(500).send({
+      res.status(400).send({
         message: 'Internal Server Error',
         err: err.message,
         stack: err.stack,
