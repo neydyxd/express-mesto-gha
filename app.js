@@ -19,7 +19,7 @@ app.use(usersRouter);
 app.use(cardsRouter);
 app.use((req, res) => {
   res
-    .status(NOT_FOUND)
+    .status(404)
     .send({ message: "Страница  по этому адресу не найдена" });
 });
 mongoose.connect('mongodb://127.0.0.1/mestodb');
