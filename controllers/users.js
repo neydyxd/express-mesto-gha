@@ -3,15 +3,15 @@ const User = require('../models/user');
 const getAllUsers = (req, res) => {
   User.find({})
     .then((data) => res.send({ data }))
-    .catch(() => res.status(400).send({ message: 'переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля' }));
+    .catch(() => res.status(500).send({ message: 'переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля' }));
 };
 
 const getUserById = (req, res) => {
   User
     .findById(req.params.userId)
     .orFail()
-    .then((user) => {
-      res.send(user);
+    .then((data) => {
+      res.send({ data });
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
@@ -61,11 +61,10 @@ const updateUser = (req, res) => {
         return res.status(400).send({
           message: 'Переданы некорректные данные',
         });
-      } else {
-        return res.status(500).send({
-          message: 'Внутренняя ошибка сервера',
-        })
       }
+      return res.status(500).send({
+        message: 'Внутренняя ошибка сервера',
+      });
     });
 };
 
@@ -78,7 +77,7 @@ const updateAvatar = (req, res) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     )
     .then((user) => {
       res.send(user);
@@ -88,11 +87,10 @@ const updateAvatar = (req, res) => {
         return res.status(400).send({
           message: 'Переданы некорректные данные',
         });
-      } else {
-        return res.status(500).send({
-          message: 'Внутренняя ошибка сервера',
-        });
       }
+      return res.status(500).send({
+        message: 'Внутренняя ошибка сервера',
+      });
     });
 };
 
