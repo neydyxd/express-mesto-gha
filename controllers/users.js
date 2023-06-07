@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const BadRequest = require('../errors/BadRequest'); // 400
+const NotFound = require('../errors/NotFound'); // 404
 
 const getAllUsers = (req, res) => {
   User.find({})
@@ -94,10 +96,28 @@ const updateAvatar = (req, res) => {
     });
 };
 
+const getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(BadRequest('Переданы некорректные данные'));
+      } else if (err.message === 'NotFound') {
+        next(new NotFound('Пользователь не найден'));
+      } else next(err);
+    });
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   updateAvatar,
+  getCurrentUser,
 };
