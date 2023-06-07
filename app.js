@@ -1,26 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards')
+const cardsRouter = require('./routes/cards');
 
 const app = express();
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '646cb206ea9073e0d78398fd',
-  };
+const { createUser, login } = require('./controllers/login');
 
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use(usersRouter);
 app.use(cardsRouter);
 app.use((req, res) => {
   res
     .status(404)
-    .send({ message: "Страница  по этому адресу не найдена" });
+    .send({ message: 'Страница  по этому адресу не найдена' });
 });
 mongoose.connect('mongodb://127.0.0.1/mestodb');
 
