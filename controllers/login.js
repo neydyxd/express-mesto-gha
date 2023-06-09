@@ -51,7 +51,7 @@ module.exports.login = (req, res, next) => {
             return Promise.reject(new AuthError('Неправильные почта или пароль'));
           }
           return res.send({
-            token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
+            token: jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' }),
           });
         });
     })
