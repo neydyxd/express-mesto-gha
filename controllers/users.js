@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const BadRequest = require('../errors/BadRequest'); // 400
 const NotFound = require('../errors/NotFound'); // 404
 
 const getAllUsers = (req, res) => {
@@ -8,28 +7,19 @@ const getAllUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля' }));
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
+  let userId;
+  if (req.params.userId === 'me') {
+    userId = req.user.npid;
+    console.log(userId);
+  } else {
+    userId = req.params.userId;
+  }
   User
-    .findById(req.params.userId)
-    .orFail()
-    .then((data) => {
-      res.send({ data });
-    })
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).send({
-          message: 'Пользователь с указанным _id не найден',
-        });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({
-          message: 'Переданы некорректные данные',
-        });
-      }
-      return res.status(500).send({
-        message: 'Внутренняя ошибка сервера',
-      });
-    });
+    .findById(userId)
+    .orFail(() => next(new NotFound('Пользователь c таким id не найден')))
+    .then((user) => res.status(200).send(user))
+    .catch(next);
 };
 
 const createUser = (req, res) => {
@@ -39,7 +29,6 @@ const createUser = (req, res) => {
       name: user.name,
       about: user.about,
       avatar: user.avatar,
-      _id: user._id,
     }))
     .catch((err) => {
       res.status(400).send({
@@ -102,28 +91,10 @@ const updateAvatar = (req, res) => {
     });
 };
 
-const getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => {
-      throw new NotFound('Пользователь по указанному _id не найден');
-    })
-    .then((user) => {
-      res.send(user);
-    })
-    .catch((e) => {
-      if (e.name === 'CastError') {
-        next(new BadRequest('Запрашиваемый пользователь не найден'));
-      } else {
-        next(e);
-      }
-    });
-};
-
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   updateAvatar,
-  getCurrentUser,
 };

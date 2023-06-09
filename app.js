@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const bodyParser = require('body-parser');
 const { createUserValid, loginValid } = require('./middlewares/validation');
-const auth = require('./middlewares/auth');
 
 const app = express();
 
@@ -15,7 +14,7 @@ const { createUser, login } = require('./controllers/login');
 
 app.post('/signin', loginValid, login);
 app.post('/signup', createUserValid, createUser);
-app.use(auth);
+
 app.use(usersRouter);
 app.use(cardsRouter);
 app.use((req, res) => {
