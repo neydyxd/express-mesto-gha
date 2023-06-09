@@ -6,8 +6,14 @@ const {
   getUserById,
   updateUser,
   updateAvatar,
-  getCurrentUser
+  getCurrentUser,
 } = require('../controllers/users');
+
+const {
+  updateAvatarValid,
+  getUsersByIdValid,
+  updateUserValid,
+} = require('../middlewares/validation');
 
 router.use(auth);
 
@@ -15,11 +21,11 @@ router.get('/users', getAllUsers);
 
 router.get('/users/me', getCurrentUser);
 
-router.patch('/users/me/avatar', updateAvatar);
+router.patch('/users/me/avatar', updateAvatarValid, updateAvatar);
 
-router.patch('/users/me', updateUser);
+router.patch('/users/me', updateUserValid, updateUser);
 
-router.get('/users/:userId', getUserById);
+router.get('/users/:userId', getUsersByIdValid, getUserById);
 
 router.use(express.json());
 
