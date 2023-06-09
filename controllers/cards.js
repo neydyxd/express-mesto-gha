@@ -26,19 +26,30 @@ const createCards = (req, res, next) => {
 };
 
 const removeCard = (req, res, next) => {
-  const { cardId } = req.params;
-  return Card.findById(cardId)
-    .then((card) => {
-      if (!card) {
-        throw new NotFound('Пользователь не найден');
-      }
-      if (!card.owner.equals(req.user._id)) {
-        return next(new CurrentError('Вы не можете удалить чужую карточку'));
-      }
-      return card.remove().then(() => res.send({ message: 'Карточка успешно удалена' }));
+  Card.findById(req.params.cardId)
+    .orFail(() => {
+      throw new NotFound('Карточка с указанным _id не найдена');
     })
-    .catch(next);
-};
+    .then((card) => {
+      const owner = card.owner.toString();
+      if (req.user._id === owner) {
+        Card.deleteOne(card)
+          .then(() => {
+            res.send(card);
+          })
+          .catch(next);
+      } else {
+        throw new CurrentError('Невозможно удалить карточку');
+      }
+    })
+    .catch((e) => {
+      if (e.name === 'CastError') {
+        next(new BadRequest('Переданы некорректные данные удаления'));
+      } else {
+        next(e);
+      }
+    });
+};//
 
 const getLike = (req, res, next) => {
   Card
