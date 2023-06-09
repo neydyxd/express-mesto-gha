@@ -34,7 +34,13 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   User.create(req.body)
-    .then((data) => res.status(201).send({ data }))
+    .then((user) => res.status(201).send({
+      email: user.email,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      _id: user._id,
+    }))
     .catch((err) => {
       res.status(400).send({
         message: 'Internal Server Error',
@@ -98,18 +104,18 @@ const updateAvatar = (req, res) => {
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFound('Пользователь не найден');
-      }
-      res.status(200).send(user);
+    .orFail(() => {
+      throw new NotFound('Пользователь по указанному _id не найден');
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(BadRequest('Переданы некорректные данные'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFound('Пользователь не найден'));
-      } else next(err);
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((e) => {
+      if (e.name === 'CastError') {
+        next(new BadRequest('Запрашиваемый пользователь не найден'));
+      } else {
+        next(e);
+      }
     });
 };
 
