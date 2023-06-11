@@ -26,23 +26,6 @@ const getUserById = (req, res, next) => {
     });
 };
 
-const createUser = (req, res) => {
-  User.create(req.body)
-    .then((user) => res.status(201).send({
-      email: user.email,
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-    }))
-    .catch((err) => {
-      res.status(400).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      });
-    });
-};
-
 const updateUser = (req, res) => {
   const { name, about } = req.body;
   User
@@ -113,7 +96,6 @@ const getCurrentUser = (req, res, next) => {
 };
 
 module.exports = {
-  createUser,
   getAllUsers,
   getUserById,
   updateUser,

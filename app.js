@@ -5,6 +5,7 @@ const { errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const { createUserValid, loginValid } = require('./middlewares/validation');
+const NotFound = require('./errors/NotFound');
 
 const app = express();
 
@@ -17,10 +18,8 @@ app.post('/signup', createUserValid, createUser);
 
 app.use(usersRouter);
 app.use(cardsRouter);
-app.use((req, res) => {
-  res
-    .status(404)
-    .send({ message: 'Страница  по этому адресу не найдена' });
+app.use((req, res, next) => {
+  next(new NotFound('Страница по этому адресу не найдена'));
 });
 mongoose.connect('mongodb://127.0.0.1/mestodb');
 app.use(errors());
