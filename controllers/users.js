@@ -26,7 +26,7 @@ const getUserById = (req, res, next) => {
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User
     .findByIdAndUpdate(
@@ -42,17 +42,13 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Переданы некорректные данные',
-        });
+        next(new BadRequest('Переданы некореектыне данные'));
       }
-      return res.status(500).send({
-        message: 'Внутренняя ошибка сервера',
-      });
+      next(err);
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User
     .findByIdAndUpdate(
@@ -68,13 +64,9 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Переданы некорректные данные',
-        });
+        next(new BadRequest('Переданы некореектыне данные'));
       }
-      return res.status(500).send({
-        message: 'Внутренняя ошибка сервера',
-      });
+      next(err);
     });
 };
 
