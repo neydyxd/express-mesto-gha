@@ -42,9 +42,9 @@ const updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некореектыне данные'));
+        return next(new BadRequest('Переданы некореектыне данные'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -65,6 +65,7 @@ const updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некореектыне данные'));
+        return;
       }
       next(err);
     });
