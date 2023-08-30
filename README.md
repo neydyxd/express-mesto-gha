@@ -21,7 +21,7 @@ Backend часть сервиса, с помощью которого польз
 
 ## Инструкция по установке
 1. Клонировать репозиторий:
-`https://github.com/Sonyamaster1/express-mesto-gha.git`
+`https://github.com/neydyxd/express-mesto-gha.git`
 2. Установить зависимости:
 `npm ci`
 3. Запустить приложение в режиме разработки:
